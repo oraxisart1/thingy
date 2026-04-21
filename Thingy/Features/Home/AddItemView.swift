@@ -2,6 +2,18 @@ import SwiftUI
 import SwiftData
 
 struct AddItemView: View {
+    enum WeightUnit: CaseIterable {
+        case g
+        case kg
+        
+        var title: String {
+            switch self {
+                case .g: return "г"
+                case .kg: return "кг"
+            }
+        }
+    }
+    
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
@@ -9,6 +21,7 @@ struct AddItemView: View {
 
     @State private var name = ""
     @State private var weightString = ""
+    @State private var weightUnit: WeightUnit = .g
     @State private var selectedCategory: CategoryModel?
 
     @FocusState private var isNameFocused: Bool
@@ -42,17 +55,30 @@ struct AddItemView: View {
                         .foregroundColor(.red)
                 }
             }
+            
+            HStack {
+                VStack(alignment: .leading) {
+                    TextField("Вес", text: $weightString)
+                        .keyboardType(.numberPad)
+                        .foregroundColor(isWeightValid ? .primary : .red)
 
-            VStack(alignment: .leading) {
-                TextField("Вес (в граммах)", text: $weightString)
-                    .keyboardType(.numberPad)
-                    .foregroundColor(isWeightValid ? .primary : .red)
-
-                if !isWeightValid {
-                    Text("Введите корректное число больше 0")
-                        .font(.caption)
-                        .foregroundColor(.red)
+                    if !isWeightValid {
+                        Text("Введите корректное число больше 0")
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    }
                 }
+                
+                Spacer()
+                
+                Picker("", selection: $weightUnit) {
+                    ForEach(WeightUnit.allCases, id: \.self) { unit in
+                        Text(unit.title)
+                            .tag(unit)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .frame(width: 120)
             }
             
             VStack(alignment: .leading) {
@@ -97,7 +123,7 @@ struct AddItemView: View {
         
         let newItem = ItemModel(
             name: name,
-            weight: weight,
+            weight: weightUnit == .g ? weight : weight * 1000,
             category: category
         )
         
