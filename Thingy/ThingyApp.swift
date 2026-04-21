@@ -1,10 +1,3 @@
-//
-//  ThingyApp.swift
-//  Thingy
-//
-//  Created by Artem Borodikhin on 12/4/26.
-//
-
 import SwiftUI
 import SwiftData
 
