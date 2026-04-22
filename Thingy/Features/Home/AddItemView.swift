@@ -127,7 +127,7 @@ struct AddItemView: View {
             category: category
         )
         
-        modelContext.insert(newItem)
+        category.items.append(newItem)
         dismiss()
     }
 }
