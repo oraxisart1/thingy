@@ -7,21 +7,29 @@ struct CategoriesSettingsView: View {
     @State private var isShowAddCategory: Bool = false
     @State private var isShowingDeleteAlert: Bool = false
     @State private var categoryPendingDeletion: Category? = nil
+    @State private var editingCategory: Category? = nil
     
     @Query private var categories: [Category]
     
     var body: some View {
         List {
             ForEach(categories) {category in
-                Text(category.name)
-                    .swipeActions(edge: .trailing) {
-                        Button(role: .destructive) {
-                            categoryPendingDeletion = category
-                            isShowingDeleteAlert = true
-                        } label: {
-                            Label("Удалить", systemImage: "trash")
-                        }
+                HStack {
+                    Text(category.name)
+                    Spacer()
+                }
+                .swipeActions(edge: .trailing) {
+                    Button(role: .destructive) {
+                        categoryPendingDeletion = category
+                        isShowingDeleteAlert = true
+                    } label: {
+                        Label("Удалить", systemImage: "trash")
                     }
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    editingCategory = category
+                }
             }
         }
         .navigationTitle("Категории")
@@ -36,7 +44,12 @@ struct CategoriesSettingsView: View {
         }
         .sheet(isPresented: $isShowAddCategory) {
             NavigationStack {
-                AddCategoryView()
+                CategoryEditorView()
+            }
+        }
+        .sheet(item: $editingCategory) { category in
+            NavigationStack {
+                CategoryEditorView(category: category)
             }
         }
         .alert("Удалить предмет?", isPresented: $isShowingDeleteAlert, presenting: categoryPendingDeletion) { category in

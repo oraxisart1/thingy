@@ -1,13 +1,19 @@
 import SwiftUI
 import SwiftData
 
-struct AddCategoryView: View {
+struct CategoryEditorView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    
+    let category: Category?
     
     @State private var name: String = ""
     
     @FocusState private var isNameFocused: Bool
+    
+    init(category: Category? = nil) {
+        self.category = category
+    }
     
     private var isNameValid: Bool {
         !name.trimmingCharacters(in: .whitespaces).isEmpty
@@ -15,6 +21,10 @@ struct AddCategoryView: View {
     
     private var isFormValid: Bool {
         isNameValid
+    }
+    
+    private var title: String {
+        category == nil ? "Добавить категорию" : "Редактировать категорию"
     }
     
     var body: some View {
@@ -30,7 +40,7 @@ struct AddCategoryView: View {
                 }
             }
         }
-        .navigationTitle("Новая категория")
+        .navigationTitle(title)
         .toolbar{
             ToolbarItem(placement: .cancellationAction) {
                 Button("Отмена") {
@@ -38,19 +48,34 @@ struct AddCategoryView: View {
                 }
             }
             ToolbarItem(placement: .confirmationAction) {
-                Button("Добавить") {
-                    let newCategory = Category(name: name)
-                    modelContext.insert(newCategory)
-                    dismiss()
+                Button("Сохранить") {
+                    withAnimation {
+                        save()
+                        dismiss()
+                    }
                 }
                 .disabled(!isFormValid)
             }
+        }
+        .onAppear {
+            if let category {
+                name = category.name
+            }
+        }
+    }
+    
+    private func save() {
+        if let category {
+            category.name = name
+        } else {
+            let newCategory = Category(name: name)
+            modelContext.insert(newCategory)
         }
     }
 }
 
 #Preview {
     NavigationStack {
-        AddCategoryView()
+        CategoryEditorView()
     }
 }
