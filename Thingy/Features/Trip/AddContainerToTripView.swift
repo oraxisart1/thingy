@@ -22,7 +22,7 @@ struct AddContainerToTripView: View {
     
     private func add(_ items: [Item]) {
         items.forEach({
-            modelContext.insert(TripItem(name: $0.name, weight: $0.weight, baseItem: $0, parent: nil))
+            modelContext.insert(TripItem(baseItem: $0, parent: nil))
         })
         
         dismiss()
@@ -55,7 +55,7 @@ struct AddContainerToTripView: View {
     category.items.append(Item(name: "Рюкзак Тимошка", weight: 1500, category: category, kind: .container))
     category.items.append(Item(name: "Сумка Пума", weight: 500, category: category, kind: .container))
     
-    context.insert(TripItem(name: greenSuitcase.name, weight: greenSuitcase.weight, baseItem: greenSuitcase))
+    context.insert(TripItem(baseItem: greenSuitcase))
     
     return NavigationStack {
         AddContainerToTripView()

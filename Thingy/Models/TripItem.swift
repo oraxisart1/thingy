@@ -3,9 +3,7 @@ import SwiftData
 
 @Model
 class TripItem {
-    var name: String
-    var weight: Int
-    
+    @Relationship(deleteRule: .nullify)
     var baseItem: Item
     
     var parent: TripItem?
@@ -18,12 +16,10 @@ class TripItem {
     }
     
     var totalWeight: Int {
-        children.reduce(weight) { $0 + $1.totalWeight }
+        children.reduce(baseItem.weight) { $0 + $1.totalWeight }
     }
     
-    init(name: String, weight: Int, baseItem: Item, parent: TripItem? = nil) {
-        self.name = name
-        self.weight = weight
+    init(baseItem: Item, parent: TripItem? = nil) {
         self.baseItem = baseItem
         self.parent = parent
     }

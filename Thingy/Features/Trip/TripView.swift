@@ -23,7 +23,7 @@ struct TripView: View {
                     TripContainerDetailView(rootItem)
                 } label: {
                     HStack {
-                        Text(rootItem.name)
+                        Text(rootItem.baseItem.name)
                         
                         Spacer()
                         
@@ -65,7 +65,7 @@ struct TripView: View {
                     deletingItem = nil
                 }
             } message: { item in
-                Text("Вы уверены, что хотите удалить сумку для багажа '\(item.name)'? Все вложенные предметы поездки будут так же удалены. Это действие нельзя отменить.")
+                Text("Вы уверены, что хотите удалить сумку для багажа '\(item.baseItem.name)'? Все вложенные предметы поездки будут так же удалены. Это действие нельзя отменить.")
             }
         .overlay {
             if rootItems.isEmpty {
@@ -95,7 +95,7 @@ struct TripView: View {
     let greenSuitcase = Item(name: "Зеленый чемодан", weight: 5000, category: bags)
     bags.items.append(greenSuitcase)
     
-    context.insert(TripItem(name: greenSuitcase.name, weight: greenSuitcase.weight, baseItem: greenSuitcase))
+    context.insert(TripItem(baseItem: greenSuitcase))
     
     return NavigationStack {
         TripView()

@@ -27,7 +27,7 @@ struct AddItemToContainerView: View {
     
     private func add(_ items: [Item]) {
         items.forEach({item in
-            let newTripItem = TripItem(name: item.name, weight: item.weight, baseItem: item, parent: tripItem)
+            let newTripItem = TripItem(baseItem: item, parent: tripItem)
             
             tripItem.children.append(newTripItem)
         })
@@ -48,7 +48,7 @@ struct AddItemToContainerView: View {
     let greenSuitcase = Item(name: "Зеленый чемодан", weight: 5000, category: category)
     category.items.append(greenSuitcase)
     
-    let tripItem = TripItem(name: greenSuitcase.name, weight: greenSuitcase.weight, baseItem: greenSuitcase)
+    let tripItem = TripItem(baseItem: greenSuitcase)
     context.insert(tripItem)
     
     let other = Category(name: "Другое")

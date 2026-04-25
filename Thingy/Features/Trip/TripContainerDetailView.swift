@@ -16,7 +16,7 @@ struct TripContainerDetailView: View {
         List() {
             ForEach(tripItem.children) {children in
                 HStack {
-                    Text(children.name)
+                    Text(children.baseItem.name)
                     
                     Spacer()
                     
@@ -27,7 +27,7 @@ struct TripContainerDetailView: View {
             }
             .onDelete(perform: delete)
         }
-        .navigationTitle(Text(tripItem.name))
+        .navigationTitle(Text(tripItem.baseItem.name))
         .toolbar {
             ToolbarItem {
                 Button {
@@ -70,7 +70,7 @@ struct TripContainerDetailView: View {
     let greenSuitcase = Item(name: "Зеленый чемодан", weight: 5000, category: category)
     category.items.append(greenSuitcase)
     
-    let tripItem = TripItem(name: greenSuitcase.name, weight: greenSuitcase.weight, baseItem: greenSuitcase)
+    let tripItem = TripItem(baseItem: greenSuitcase)
     context.insert(tripItem)
     
     

@@ -9,6 +9,9 @@ final class Item {
     
     var category: Category
     
+    @Relationship(deleteRule: .cascade, inverse: \TripItem.baseItem)
+    var tripItems: [TripItem] = []
+    
     var isContainer: Bool {
         kind == .container
     }
