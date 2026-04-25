@@ -5,8 +5,9 @@ import SwiftData
 struct ThingyApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            ItemModel.self,
-            CategoryModel.self
+            Item.self,
+            Category.self,
+            TripItem.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

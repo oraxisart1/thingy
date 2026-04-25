@@ -1,0 +1,27 @@
+import Foundation
+import SwiftData
+
+@Model
+final class Item {
+    var name: String
+    var weight: Int
+    var kind: ItemKind? = ItemKind.regular
+    
+    var category: Category
+    
+    var isContainer: Bool {
+        kind == .container
+    }
+    
+    init(name: String, weight: Int, category: Category, kind: ItemKind = .regular) {
+        self.name = name
+        self.weight = weight
+        self.category = category
+        self.kind = kind
+    }
+    
+    enum ItemKind: String, Codable {
+        case regular
+        case container
+    }
+}

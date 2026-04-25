@@ -2,11 +2,11 @@ import Foundation
 import SwiftData
 
 @Model
-class CategoryModel {
+class Category {
     var name: String
     
-    @Relationship(deleteRule: .deny, inverse: \ItemModel.category)
-    var items = [ItemModel]()
+    @Relationship(deleteRule: .cascade, inverse: \Item.category)
+    var items = [Item]()
     
     init(name: String) {
         self.name = name

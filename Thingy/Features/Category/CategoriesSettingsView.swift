@@ -6,9 +6,9 @@ struct CategoriesSettingsView: View {
     
     @State private var isShowAddCategory: Bool = false
     @State private var isShowingDeleteAlert: Bool = false
-    @State private var categoryPendingDeletion: CategoryModel? = nil
+    @State private var categoryPendingDeletion: Category? = nil
     
-    @Query private var categories: [CategoryModel]
+    @Query private var categories: [Category]
     
     var body: some View {
         List {
@@ -57,5 +57,5 @@ struct CategoriesSettingsView: View {
     NavigationStack {
         CategoriesSettingsView()
     }
-    .modelContainer(for: CategoryModel.self, inMemory: true)
+    .modelContainer(for: Category.self, inMemory: true)
 }

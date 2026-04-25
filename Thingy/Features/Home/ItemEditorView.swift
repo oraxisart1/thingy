@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-struct AddItemView: View {
+struct ItemEditorView: View {
     enum WeightUnit: CaseIterable {
         case g
         case kg
@@ -14,17 +14,24 @@ struct AddItemView: View {
         }
     }
     
+    let item: Item?
+    
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
-    @Query private var categories: [CategoryModel]
+    @Query private var categories: [Category]
 
     @State private var name = ""
     @State private var weightString = ""
     @State private var weightUnit: WeightUnit = .g
-    @State private var selectedCategory: CategoryModel?
+    @State private var selectedCategory: Category?
+    @State private var isContainer: Bool = false
 
     @FocusState private var isNameFocused: Bool
+    
+    init(item: Item? = nil) {
+        self.item = item
+    }
 
     private var isNameValid: Bool {
         !name.trimmingCharacters(in: .whitespaces).isEmpty
@@ -41,6 +48,10 @@ struct AddItemView: View {
 
     private var canSave: Bool {
         isNameValid && !weightString.isEmpty && isWeightValid && isCategoryValid
+    }
+    
+    private var title: String {
+        item == nil ? "Добавить вещь" : "Изменить вещь"
     }
 
     var body: some View {
@@ -85,7 +96,7 @@ struct AddItemView: View {
                 Picker("Категория", selection: $selectedCategory) {
                     ForEach(categories) {category in
                         Text(category.name)
-                            .tag(category as CategoryModel?)
+                            .tag(category as Category?)
                     }
                 }
                 
@@ -95,21 +106,43 @@ struct AddItemView: View {
                         .foregroundColor(.red)
                 }
             }
+            
+            Section {
+                Toggle(isOn: $isContainer) {
+                    Label("Сумка", systemImage: "suitcase")
+                }
+            } footer: {
+                Text("Позволяет добавлять предметы внутрь")
+            }
         }
-        .navigationTitle("Новый предмет")
+        .navigationTitle(title)
         .onAppear {
             isNameFocused = true
             selectedCategory = categories.first
         }
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
-                Button("Добавить") {
-                    save()
+                Button("Сохранить") {
+                    withAnimation {
+                        save()
+                        dismiss()
+                    }
                 }
                 .disabled(!canSave)
             }
             ToolbarItem(placement: .cancellationAction) {
                 Button("Отмена") { dismiss() }
+            }
+        }
+        .onAppear {
+            if let item {
+                name = item.name
+                weightString = "\(item.weight)"
+                weightUnit = .g
+                selectedCategory = item.category
+                if case .container = item.kind {
+                    isContainer = true
+                }
             }
         }
     }
@@ -121,21 +154,31 @@ struct AddItemView: View {
             return
         }
         
-        let newItem = ItemModel(
-            name: name,
-            weight: weightUnit == .g ? weight : weight * 1000,
-            category: category
-        )
+        let weightInGrams: Int = weightUnit == .g ? weight : weight * 1000
+        let kind = isContainer ? Item.ItemKind.container : .regular
         
-        category.items.append(newItem)
-        dismiss()
+        if let item {
+            item.name = name
+            item.weight = weightInGrams
+            item.category = category
+            item.kind = kind
+        } else {
+            let newItem = Item(
+                name: name,
+                weight: weightUnit == .g ? weight : weight * 1000,
+                category: category,
+                kind: isContainer ? .container : .regular
+            )
+            
+            category.items.append(newItem)
+        }
     }
 }
 
 #Preview {
     NavigationStack{
-        AddItemView()
+        ItemEditorView()
     }
-    .modelContainer(for: ItemModel.self, inMemory: true)
-    .modelContainer(for: CategoryModel.self, inMemory: true)
+    .modelContainer(for: Item.self, inMemory: true)
+    .modelContainer(for: Category.self, inMemory: true)
 }

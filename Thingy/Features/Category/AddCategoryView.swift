@@ -39,7 +39,7 @@ struct AddCategoryView: View {
             }
             ToolbarItem(placement: .confirmationAction) {
                 Button("Добавить") {
-                    let newCategory = CategoryModel(name: name)
+                    let newCategory = Category(name: name)
                     modelContext.insert(newCategory)
                     dismiss()
                 }

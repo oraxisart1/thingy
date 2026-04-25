@@ -6,13 +6,24 @@ struct MainView: View {
         TabView {
             NavigationStack {
                 HomeView()
-            }.tabItem {
+            }
+            .tabItem {
                 Image(systemName: "house")
                 Text("Главная")
             }
+            
+            NavigationStack {
+                TripView()
+            }
+            .tabItem {
+                Image(systemName: "suitcase")
+                Text("Поездка")
+            }
+            
             NavigationStack {
                 SettingsView()
-            }.tabItem {
+            }
+            .tabItem {
                 Image(systemName: "gear")
                 Text("Настройки")
             }
@@ -22,6 +33,6 @@ struct MainView: View {
 
 #Preview {
     MainView()
-        .modelContainer(for: ItemModel.self, inMemory: true)
-        .modelContainer(for: CategoryModel.self, inMemory: true)
+        .modelContainer(for: Item.self, inMemory: true)
+        .modelContainer(for: Category.self, inMemory: true)
 }

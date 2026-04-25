@@ -4,17 +4,18 @@ import SwiftData
 struct HomeView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: [
-        SortDescriptor(\CategoryModel.name)
-    ]) private var categories: [CategoryModel]
+        SortDescriptor(\Category.name)
+    ]) private var categories: [Category]
     @State private var isShowingAddSheet = false
     
     @State private var isShowingDeleteAlert = false
-    @State private var itemPendingDeletion: ItemModel?
+    @State private var itemPendingDeletion: Item?
+    @State private var editingItem: Item?
     
 
-    @State private var categoryPendingSelection: CategoryModel?
+    @State private var categoryPendingSelection: Category?
     
-    private var nonEmptyCategories: [CategoryModel] {
+    private var nonEmptyCategories: [Category] {
         categories.filter { !$0.items.isEmpty }
     }
     
@@ -41,7 +42,7 @@ struct HomeView: View {
                 List {
                     ForEach(nonEmptyCategories) {category in
                         Section {
-                            ForEach(category.items) { item in
+                            ForEach(sortedItems(category.items)) { item in
                                 HStack {
                                     Text(item.name)
                                         .font(.headline)
@@ -60,6 +61,10 @@ struct HomeView: View {
                                     } label: {
                                         Label("Удалить", systemImage: "trash")
                                     }
+                                }
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    editingItem = item
                                 }
                             }
                         } header: {
@@ -99,7 +104,12 @@ struct HomeView: View {
             }
         .sheet(isPresented: $isShowingAddSheet) {
             NavigationStack {
-                AddItemView()
+                ItemEditorView()
+            }
+        }
+        .sheet(item: $editingItem) { item in
+            NavigationStack {
+                ItemEditorView(item: item)
             }
         }
         .overlay {
@@ -109,37 +119,41 @@ struct HomeView: View {
         }
     }
     
-    private func delete(_ item: ItemModel) {
-            modelContext.delete(item)
-        }
+    private func delete(_ item: Item) {
+        modelContext.delete(item)
+    }
+    
+    private func sortedItems(_ items: [Item]) -> [Item] {
+        items.sorted {$0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending}
+    }
 }
 
 #Preview("С данными") {
     let container = try! ModelContainer(
-        for: ItemModel.self, CategoryModel.self,
+        for: Item.self, Category.self,
         configurations: ModelConfiguration(isStoredInMemoryOnly: true)
     )
     
     let context = container.mainContext
         
-    let clothes = CategoryModel(name: "Одежда")
-    let tech = CategoryModel(name: "Электроника")
-    let cosmetics = CategoryModel(name: "Косметика")
-    let other = CategoryModel(name: "Другое")
+    let clothes = Category(name: "Одежда")
+    let tech = Category(name: "Электроника")
+    let cosmetics = Category(name: "Косметика")
+    let other = Category(name: "Другое")
     
-    let item1 = ItemModel(name: "Футболка", weight: 200, category: clothes)
-    let item2 = ItemModel(name: "Штаны", weight: 500, category: clothes)
-    let item3 = ItemModel(name: "Ноутбук", weight: 1500, category: tech)
-    let item4 = ItemModel(name: "Телефон", weight: 200, category: tech)
-    let item5 = ItemModel(name: "Зубная щетка", weight: 100, category: cosmetics)
-    let item6 = ItemModel(name: "Ирригатор", weight: 500, category: cosmetics)
-    let item7 = ItemModel(name: "Шампунь", weight: 400, category: cosmetics)
-    let item8 = ItemModel(name: "Маска для волос", weight: 600, category: cosmetics)
-    let item9 = ItemModel(name: "Куртка", weight: 1500, category: clothes)
-    let item10 = ItemModel(name: "Кроссовки", weight: 1200, category: clothes)
-    let item11 = ItemModel(name: "Постельное белье", weight: 2000, category: other)
-    let item12 = ItemModel(name: "Одеяло", weight: 900, category: other)
-    let item13 = ItemModel(name: "Графин", weight: 500, category: other)
+    let item1 = Item(name: "Футболка", weight: 200, category: clothes)
+    let item2 = Item(name: "Штаны", weight: 500, category: clothes)
+    let item3 = Item(name: "Ноутбук", weight: 1500, category: tech)
+    let item4 = Item(name: "Телефон", weight: 200, category: tech)
+    let item5 = Item(name: "Зубная щетка", weight: 100, category: cosmetics)
+    let item6 = Item(name: "Ирригатор", weight: 500, category: cosmetics)
+    let item7 = Item(name: "Шампунь", weight: 400, category: cosmetics)
+    let item8 = Item(name: "Маска для волос", weight: 600, category: cosmetics)
+    let item9 = Item(name: "Куртка", weight: 1500, category: clothes)
+    let item10 = Item(name: "Кроссовки", weight: 1200, category: clothes)
+    let item11 = Item(name: "Постельное белье", weight: 2000, category: other)
+    let item12 = Item(name: "Одеяло", weight: 900, category: other)
+    let item13 = Item(name: "Графин", weight: 500, category: other)
     
     
     context.insert(clothes)
@@ -170,5 +184,5 @@ struct HomeView: View {
     NavigationStack {
         HomeView()
     }
-    .modelContainer(for: CategoryModel.self, inMemory: true)
+    .modelContainer(for: Category.self, inMemory: true)
 }
