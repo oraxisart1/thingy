@@ -22,7 +22,7 @@ struct TripContainerDetailView: View {
                     
                     Text("\(Weight(children.totalWeight).formatted)")
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(children.totalWeight > 0 ? Color.secondary : Color.red)
                 }
             }
             .onDelete(perform: delete)

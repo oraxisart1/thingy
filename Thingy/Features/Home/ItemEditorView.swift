@@ -39,7 +39,7 @@ struct ItemEditorView: View {
 
     private var isWeightValid: Bool {
         if weightString.isEmpty { return true }
-        return Int(weightString) != nil && (Int(weightString) ?? 0) > 0
+        return Int(weightString) != nil && (Int(weightString) ?? 0) >= 0
     }
     
     private var isCategoryValid: Bool {
@@ -74,7 +74,7 @@ struct ItemEditorView: View {
                         .foregroundColor(isWeightValid ? .primary : .red)
 
                     if !isWeightValid {
-                        Text("Введите корректное число больше 0")
+                        Text("Введите корректное число больше или равное 0")
                             .font(.caption)
                             .foregroundColor(.red)
                     }

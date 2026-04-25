@@ -49,9 +49,9 @@ struct HomeView: View {
                                     
                                     Spacer()
                                     
-                                    Text(item.weight < 1000 ? "\(item.weight) г" : "\(Double(item.weight) / 1000, specifier: "%.2f") кг")
+                                    Text(Weight(item.weight).formatted)
                                         .font(.subheadline)
-                                        .foregroundColor(.secondary)
+                                        .foregroundStyle(item.weight > 0 ? Color.secondary : Color.red)
                                 }
                                 .padding(.vertical, 4)
                                 .swipeActions(edge: .trailing) {
