@@ -12,7 +12,7 @@ class TripItem {
     var children: [TripItem] = []
     
     var isContainer: Bool {
-        !children.isEmpty
+        baseItem.isContainer
     }
     
     var totalWeight: Int {

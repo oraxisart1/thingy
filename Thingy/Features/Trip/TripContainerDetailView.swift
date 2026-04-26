@@ -15,14 +15,30 @@ struct TripContainerDetailView: View {
     var body: some View {
         List() {
             ForEach(tripItem.children) {children in
-                HStack {
-                    Text(children.baseItem.name)
-                    
-                    Spacer()
-                    
-                    Text("\(Weight(children.totalWeight).formatted)")
-                        .font(.subheadline)
-                        .foregroundStyle(children.totalWeight > 0 ? Color.secondary : Color.red)
+                if !children.isContainer {
+                    HStack {
+                        Text(children.baseItem.name)
+                        
+                        Spacer()
+                        
+                        Text("\(Weight(children.totalWeight).formatted)")
+                            .font(.subheadline)
+                            .foregroundStyle(children.totalWeight > 0 ? Color.secondary : Color.red)
+                    }
+                } else {
+                    NavigationLink {
+                        TripContainerDetailView(children)
+                    } label: {
+                        HStack {
+                            Text(children.baseItem.name)
+                            
+                            Spacer()
+                            
+                            Text("\(Weight(children.totalWeight).formatted) (\(children.children.count))")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                    }
                 }
             }
             .onDelete(perform: delete)
