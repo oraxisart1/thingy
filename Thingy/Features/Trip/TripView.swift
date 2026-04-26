@@ -82,23 +82,8 @@ struct TripView: View {
 }
 
 #Preview("Добавлены сумки") {
-    let container = try! ModelContainer(
-        for: TripItem.self, Item.self, Category.self,
-        configurations: ModelConfiguration(isStoredInMemoryOnly: true)
-    )
-    
-    let context = container.mainContext
-    
-    let bags = Category(name: "Сумки")
-    context.insert(bags)
-    
-    let greenSuitcase = Item(name: "Зеленый чемодан", weight: 5000, category: bags)
-    bags.items.append(greenSuitcase)
-    
-    context.insert(TripItem(baseItem: greenSuitcase))
-    
     return NavigationStack {
         TripView()
     }
-    .modelContainer(container)
+    .modelContainer(PreviewProvider.make(FullDataPreview.self))
 }
