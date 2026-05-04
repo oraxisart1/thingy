@@ -7,10 +7,10 @@ struct AddItemToContainerView: View {
     
     var tripItem: TripItem
     
-    @Query private var existingTripItems: [TripItem]
+    @Query private var tripItems: [TripItem]
     
-    private var usedItems: Set<Item> {
-        Set(existingTripItems.map{$0.baseItem})
+    private var usedItemsSet: Set<Item> {
+        Set(tripItems.filter{$0.trip === tripItem.trip}.map(\.baseItem))
     }
     
     init(_ tripItem: TripItem) {
@@ -20,46 +20,25 @@ struct AddItemToContainerView: View {
     var body: some View {
         ItemPicker(
             title: "Выбор вещей",
-            filter: {item in !usedItems.contains(item)},
+            filter: {item in !usedItemsSet.contains(item)},
             onDone: add
         )
     }
     
     private func add(_ items: [Item]) {
         items.forEach({item in
-            let newTripItem = TripItem(baseItem: item, parent: tripItem)
-            
-            tripItem.children.append(newTripItem)
+            tripItem.children.append(TripItem(baseItem: item, trip: tripItem.trip!))
         })
     }
 }
 
 #Preview {
-    let container = try! ModelContainer(
-        for: Category.self, Item.self, TripItem.self,
-        configurations: ModelConfiguration(isStoredInMemoryOnly: true)
-    )
+    let container = PreviewProvider.make(FullDataPreview.self)
     
-    let context = container.mainContext
-    
-    let category = Category(name: "Сумки")
-    context.insert(category)
-    
-    let greenSuitcase = Item(name: "Зеленый чемодан", weight: 5000, category: category)
-    category.items.append(greenSuitcase)
-    
-    let tripItem = TripItem(baseItem: greenSuitcase)
-    context.insert(tripItem)
-    
-    let other = Category(name: "Другое")
-    context.insert(other)
-    
-    let pen = Item(name: "Ручка", weight: 50, category: category)
-    other.items.append(pen)
-    
+    let trip = try! container.mainContext.fetch(FetchDescriptor<Trip>()).first!
     
     return NavigationStack {
-        AddItemToContainerView(tripItem)
+        AddItemToContainerView(trip.containers.first!)
     }
     .modelContainer(container)
 }

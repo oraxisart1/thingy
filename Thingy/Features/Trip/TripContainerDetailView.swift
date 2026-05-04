@@ -73,25 +73,11 @@ struct TripContainerDetailView: View {
 }
 
 #Preview("Пустая сумка") {
-    let container = try! ModelContainer(
-        for: Category.self, Item.self, TripItem.self,
-        configurations: ModelConfiguration(isStoredInMemoryOnly: true)
-    )
-    
-    let context = container.mainContext
-    
-    let category = Category(name: "Сумки")
-    context.insert(category)
-    
-    let greenSuitcase = Item(name: "Зеленый чемодан", weight: 5000, category: category)
-    category.items.append(greenSuitcase)
-    
-    let tripItem = TripItem(baseItem: greenSuitcase)
-    context.insert(tripItem)
-    
+    let container = PreviewProvider.make(FullDataPreview.self)
+    let trip = try! container.mainContext.fetch(FetchDescriptor<Trip>()).first!
     
     return NavigationStack {
-        TripContainerDetailView(tripItem)
+        TripContainerDetailView(trip.containers.first!)
     }
     .modelContainer(container)
 }

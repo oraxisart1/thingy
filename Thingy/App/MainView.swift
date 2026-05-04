@@ -33,6 +33,5 @@ struct MainView: View {
 
 #Preview {
     MainView()
-        .modelContainer(for: Item.self, inMemory: true)
-        .modelContainer(for: Category.self, inMemory: true)
+        .modelContainer(PreviewProvider.make(FullDataPreview.self))
 }

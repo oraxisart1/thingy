@@ -118,8 +118,8 @@ struct ItemPicker: View {
     let category = Category(name: "Другое")
     context.insert(category)
     
-    category.items.append(Item(name: "Лопатка", weight: 100, category: category))
-    category.items.append(Item(name: "Графин", weight: 200, category: category))
+    category.items.append(Item(name: "Лопатка", weight: 100))
+    category.items.append(Item(name: "Графин", weight: 200))
     
     return NavigationStack {
         ItemPicker(

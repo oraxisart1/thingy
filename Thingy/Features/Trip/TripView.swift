@@ -4,72 +4,75 @@ import SwiftData
 struct TripView: View {
     @Environment(\.modelContext) private var modelContext
     
-    @Query private var tripItems: [TripItem]
+    @Query private var trips: [Trip]
     
-    @State private var isShowAddContainer: Bool = false
+    @State private var isShowAddTrip: Bool = false
     
+    @State private var editingTrip: Trip?
     
-    @State private var isShowDeleteContainerConfirmation: Bool = false
-    @State private var deletingItem: TripItem? = nil
-    
-    private var rootItems: [TripItem] {
-        tripItems.filter { $0.parent == nil }
-    }
+    @State private var isShowDeleteTripConfirmation: Bool = false
+    @State private var deletingTrip: Trip? = nil
     
     var body: some View {
         List {
-            ForEach(rootItems) { rootItem in
+            ForEach(trips) { trip in
                 NavigationLink {
-                    TripContainerDetailView(rootItem)
+                    TripDetailView(trip)
                 } label: {
                     HStack {
-                        Text(rootItem.baseItem.name)
+                        Text(trip.name)
                         
                         Spacer()
-                        
-                        Text("\(Weight(rootItem.totalWeight).formatted) (\(rootItem.children.count))")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
                     }
                 }
                 .swipeActions(edge: .trailing) {
                     Button(role: .destructive) {
-                        isShowDeleteContainerConfirmation = true
-                        deletingItem = rootItem
+                        isShowDeleteTripConfirmation = true
+                        deletingTrip = trip
                     } label: {
                         Label("Удалить", systemImage: "trash")
                     }
                 }
+                .contextMenu {
+                    Button("Редактировать") {
+                        editingTrip = trip
+                    }
+                }
             }
         }
-        .navigationTitle("Сбор багажа")
+        .navigationTitle("Мои поездки")
         .toolbar {
             ToolbarItem {
                 Button {
-                    isShowAddContainer = true
+                    isShowAddTrip = true
                 } label: {
-                    Label("Добавить сумку", systemImage: "plus")
+                    Label("Добавить поездку", systemImage: "plus")
                 }
             }
         }
-        .sheet(isPresented: $isShowAddContainer) {
+        .sheet(isPresented: $isShowAddTrip) {
             NavigationStack {
-                AddContainerToTripView()
+                TripEditorView()
             }
         }
-        .alert("Удалить предмет?", isPresented: $isShowDeleteContainerConfirmation, presenting: deletingItem) { item in
+        .sheet(item: $editingTrip) { trip in
+            NavigationStack {
+                TripEditorView(trip: trip)
+            }
+        }
+        .alert("Удалить предмет?", isPresented: $isShowDeleteTripConfirmation, presenting: deletingTrip) { trip in
                 Button("Удалить", role: .destructive) {
-                    modelContext.delete(item)
+                    modelContext.delete(trip)
                 }
                 Button("Отмена", role: .cancel) {
-                    deletingItem = nil
+                    deletingTrip = nil
                 }
-            } message: { item in
-                Text("Вы уверены, что хотите удалить сумку для багажа '\(item.baseItem.name)'? Все вложенные предметы поездки будут так же удалены. Это действие нельзя отменить.")
+            } message: { trip in
+                Text("Вы уверены, что хотите удалить поездку '\(trip.name)'? Все вложенные сумки и предметы поездки будут так же удалены. Это действие нельзя отменить.")
             }
         .overlay {
-            if rootItems.isEmpty {
-                ContentUnavailableView("Багаж пуст", systemImage: "suitcase", description: Text("Добавьте сумку чтобы начать"))
+            if trips.isEmpty {
+                ContentUnavailableView("Список поездок пуст", systemImage: "suitcase", description: Text("Добавьте поездку чтобы начать"))
             }
         }
     }
@@ -81,7 +84,7 @@ struct TripView: View {
     }
 }
 
-#Preview("Добавлены сумки") {
+#Preview("Добавлены поездки") {
     return NavigationStack {
         TripView()
     }

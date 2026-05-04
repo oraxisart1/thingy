@@ -64,7 +64,7 @@ struct ItemDTO: Codable {
     init(from model: Item) {
         self.name = model.name
         self.weight = model.weight
-        self.categoryName = model.category.name
+        self.categoryName = model.category!.name
         self.kind = model.kind ?? .regular
     }
 }

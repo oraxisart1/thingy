@@ -8,8 +8,10 @@ class TripItem {
     
     var parent: TripItem?
     
+    var trip: Trip?
+    
     @Relationship(deleteRule: .cascade, inverse: \TripItem.parent)
-    var children: [TripItem] = []
+    var children = [TripItem]()
     
     var isContainer: Bool {
         baseItem.isContainer
@@ -19,8 +21,8 @@ class TripItem {
         children.reduce(baseItem.weight) { $0 + $1.totalWeight }
     }
     
-    init(baseItem: Item, parent: TripItem? = nil) {
+    init(baseItem: Item, trip: Trip) {
         self.baseItem = baseItem
-        self.parent = parent
+        self.trip = trip
     }
 }
