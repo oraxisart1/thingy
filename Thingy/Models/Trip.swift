@@ -21,4 +21,14 @@ extension Trip {
     var usedBaseItems: [Item] {
         items.map{$0.baseItem}
     }
+    
+    func duplicate(name: String) -> Trip {
+        let newTrip = Trip(name: name)
+        
+        for item in items where item.parent == nil {
+            newTrip.items.append(item.clone(for: newTrip))
+        }
+        
+        return newTrip
+    }
 }

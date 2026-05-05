@@ -26,3 +26,18 @@ class TripItem {
         self.trip = trip
     }
 }
+
+extension TripItem {
+    func clone(for trip: Trip, parent: TripItem? = nil) -> TripItem {
+        let newItem = TripItem(baseItem: baseItem, trip: trip)
+        newItem.parent = parent
+        
+        for child in children {
+            let newChild = child.clone(for: trip, parent: newItem)
+            newItem.children.append(newChild)
+            trip.items.append(newChild)
+        }
+        
+        return newItem
+    }
+}

@@ -37,6 +37,11 @@ struct TripView: View {
                     Button("Редактировать") {
                         editingTrip = trip
                     }
+                    
+                    Button("Дублировать") {
+                        let newTrip = trip.duplicate(name: "\(trip.name) (копия)")
+                        modelContext.insert(newTrip)
+                    }
                 }
             }
         }
