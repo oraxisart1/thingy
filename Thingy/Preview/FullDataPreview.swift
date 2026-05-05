@@ -19,17 +19,17 @@ enum FullDataPreview: PreviewProtocol {
         context.insert(other)
         
         for i in 1..<10 {
-            let item = Item(name: "Сумка \(i)", weight: (i + 1) * 100, kind: .container)
+            let item = Item(name: "Сумка \(i)", weight: (i + 1) * 100, category: containers, kind: .container)
             containers.items.append(item)
         }
         
         for i in 1..<10 {
-            let item = Item(name: "Одежда \(i)", weight: (i + 1) * 10)
+            let item = Item(name: "Одежда \(i)", weight: (i + 1) * 10, category: clothes)
             clothes.items.append(item)
         }
         
         for i in 1..<10 {
-            let item = Item(name: "Другое \(i)", weight: (i + 1) * 20)
+            let item = Item(name: "Другое \(i)", weight: (i + 1) * 20, category: other)
             other.items.append(item)
         }
         
@@ -43,10 +43,11 @@ enum FullDataPreview: PreviewProtocol {
             trip.items.append(secondContainer)
 
             for item in clothes.items {
-                firstContainer.children.append(TripItem(baseItem: item, trip: trip))
+                firstContainer.children.append(TripItem(baseItem: item, trip: trip, parent: firstContainer))
             }
             
-            let nestedContainer = TripItem(baseItem: containers.items[2], trip: trip)
+            let nestedContainer = TripItem(baseItem: containers.items[2], trip: trip, parent: firstContainer)
+            firstContainer.children.append(nestedContainer)
             for item in other.items {
                 nestedContainer.children.append(TripItem(baseItem: item, trip: trip))
             }

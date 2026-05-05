@@ -8,7 +8,7 @@ class TripItem {
     
     var parent: TripItem?
     
-    var trip: Trip?
+    var trip: Trip
     
     @Relationship(deleteRule: .cascade, inverse: \TripItem.parent)
     var children = [TripItem]()
@@ -21,16 +21,16 @@ class TripItem {
         children.reduce(baseItem.weight) { $0 + $1.totalWeight }
     }
     
-    init(baseItem: Item, trip: Trip) {
+    init(baseItem: Item, trip: Trip, parent: TripItem? = nil) {
         self.baseItem = baseItem
         self.trip = trip
+        self.parent = parent
     }
 }
 
 extension TripItem {
     func clone(for trip: Trip, parent: TripItem? = nil) -> TripItem {
-        let newItem = TripItem(baseItem: baseItem, trip: trip)
-        newItem.parent = parent
+        let newItem = TripItem(baseItem: baseItem, trip: trip, parent: parent)
         
         for child in children {
             let newChild = child.clone(for: trip, parent: newItem)

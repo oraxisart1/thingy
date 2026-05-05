@@ -108,19 +108,6 @@ struct ItemPicker: View {
 }
 
 #Preview("Есть данные") {
-    let container = try! ModelContainer(
-        for: Category.self, Item.self,
-        configurations: ModelConfiguration(isStoredInMemoryOnly: true)
-    )
-    
-    let context = container.mainContext
-    
-    let category = Category(name: "Другое")
-    context.insert(category)
-    
-    category.items.append(Item(name: "Лопатка", weight: 100))
-    category.items.append(Item(name: "Графин", weight: 200))
-    
     return NavigationStack {
         ItemPicker(
             title: "Выбор вещи",
@@ -130,5 +117,5 @@ struct ItemPicker: View {
             onDone: {_ in}
         )
     }
-    .modelContainer(container)
+    .modelContainer(PreviewProvider.make(FullDataPreview.self))
 }

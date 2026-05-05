@@ -169,6 +169,7 @@ struct ItemEditorView: View {
             let newItem = Item(
                 name: name,
                 weight: weightUnit == .g ? weight : weight * 1000,
+                category: category,
                 kind: isContainer ? .container : .regular
             )
             

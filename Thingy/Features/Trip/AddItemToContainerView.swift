@@ -5,16 +5,18 @@ struct AddItemToContainerView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
-    var tripItem: TripItem
+    var container: TripItem
     
     @Query private var tripItems: [TripItem]
     
+    private var trip: Trip {container.trip}
+    
     private var usedItemsSet: Set<Item> {
-        Set(tripItems.filter{$0.trip === tripItem.trip}.map(\.baseItem))
+        Set(tripItems.filter{$0.trip === trip}.map(\.baseItem))
     }
     
     init(_ tripItem: TripItem) {
-        self.tripItem = tripItem
+        self.container = tripItem
     }
     
     var body: some View {
@@ -27,7 +29,7 @@ struct AddItemToContainerView: View {
     
     private func add(_ items: [Item]) {
         items.forEach({item in
-            tripItem.children.append(TripItem(baseItem: item, trip: tripItem.trip!))
+            container.children.append(TripItem(baseItem: item, trip: trip, parent: container))
         })
     }
 }

@@ -7,7 +7,7 @@ final class Item {
     var weight: Int
     var kind: ItemKind? = ItemKind.regular
     
-    var category: Category?
+    var category: Category
     
     @Relationship(deleteRule: .cascade, inverse: \TripItem.baseItem)
     var tripItems = [TripItem]()
@@ -16,10 +16,11 @@ final class Item {
         kind == .container
     }
     
-    init(name: String, weight: Int, kind: ItemKind = .regular) {
+    init(name: String, weight: Int, category: Category, kind: ItemKind = .regular) {
         self.name = name
         self.weight = weight
         self.kind = kind
+        self.category = category
     }
     
     enum ItemKind: String, Codable {
