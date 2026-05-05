@@ -13,10 +13,12 @@ enum FullDataPreview: PreviewProtocol {
         let containers = Category(name: "Сумки")
         let clothes = Category(name: "Одежда")
         let other = Category(name: "Другое")
+        let electronics = Category(name: "Электроника")
         
         context.insert(containers)
         context.insert(clothes)
         context.insert(other)
+        context.insert(electronics)
         
         for i in 1..<10 {
             let item = Item(name: "Сумка \(i)", weight: (i + 1) * 100, category: containers, kind: .container)
@@ -31,6 +33,11 @@ enum FullDataPreview: PreviewProtocol {
         for i in 1..<10 {
             let item = Item(name: "Другое \(i)", weight: (i + 1) * 20, category: other)
             other.items.append(item)
+        }
+        
+        for i in 1..<10 {
+            let item = Item(name: "Электроника \(i)", weight: (i + 1) * 30, category: electronics)
+            electronics.items.append(item)
         }
         
         for i in 1..<3 {

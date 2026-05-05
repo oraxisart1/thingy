@@ -22,6 +22,14 @@ struct ItemPicker: View {
             .filter(searchFilter)
     }
     
+    private var groupedItems: [(category: Category, items: [Item])] {
+        Dictionary(grouping: filteredItems, by: { $0.category })
+                .map { (category: $0.key, items: $0.value) }
+                .sorted {
+                    $0.category.name.localizedCaseInsensitiveCompare($1.category.name) == .orderedAscending
+                }
+    }
+    
     init(
         title: String,
         filter: @escaping (Item) -> Bool = { _ in true },
@@ -36,8 +44,14 @@ struct ItemPicker: View {
     
     var body: some View {
         List {
-            ForEach(filteredItems) { item in
-                row(item)
+            ForEach(groupedItems, id: \.category.id) { group in
+                Section {
+                    ForEach(group.items) { item in
+                        row(item)
+                    }
+                } header: {
+                    Text(group.category.name)
+                }
             }
         }
         .navigationTitle(title)
@@ -111,9 +125,7 @@ struct ItemPicker: View {
     return NavigationStack {
         ItemPicker(
             title: "Выбор вещи",
-            filter: {item in
-                item.weight > 100
-            },
+            filter: {_ in true},
             onDone: {_ in}
         )
     }
