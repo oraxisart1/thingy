@@ -24,6 +24,7 @@ enum AppMigrationPlan: SchemaMigrationPlan {
     
     private static func migrateTripItems(context: ModelContext) {
         let defaultTrip = Trip(name: "Поездка")
+        context.insert(defaultTrip)
         
         let tripItems = try! context.fetch(FetchDescriptor<TripItem>())
         
