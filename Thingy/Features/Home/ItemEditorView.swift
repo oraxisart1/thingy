@@ -24,7 +24,7 @@ struct ItemEditorView: View {
     @State private var name = ""
     @State private var weightString = ""
     @State private var weightUnit: WeightUnit = .g
-    @State private var selectedCategory: Category?
+    @State private var selectedCategory: Category? = nil
     @State private var isContainer: Bool = false
 
     @FocusState private var isNameFocused: Bool
@@ -94,16 +94,16 @@ struct ItemEditorView: View {
             
             VStack(alignment: .leading) {
                 Picker("Категория", selection: $selectedCategory) {
+                    if selectedCategory == nil {
+                        Text("Выберите категорию")
+                            .foregroundColor(.secondary)
+                            .tag(nil as Category?)
+                    }
+                    
                     ForEach(categories) {category in
                         Text(category.name)
                             .tag(category as Category?)
                     }
-                }
-                
-                if !isCategoryValid {
-                    Text("Выберите категорию")
-                        .font(.caption)
-                        .foregroundColor(.red)
                 }
             }
             
@@ -118,7 +118,6 @@ struct ItemEditorView: View {
         .navigationTitle(title)
         .onAppear {
             isNameFocused = true
-            selectedCategory = categories.first
         }
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
@@ -178,6 +177,5 @@ struct ItemEditorView: View {
     NavigationStack{
         ItemEditorView()
     }
-    .modelContainer(for: Item.self, inMemory: true)
-    .modelContainer(for: Category.self, inMemory: true)
+    .modelContainer(PreviewProvider.make(FullDataPreview.self))
 }
