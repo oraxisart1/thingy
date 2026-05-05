@@ -19,7 +19,11 @@ struct ItemEditorView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     
-    @Query private var categories: [Category]
+    @Query(
+        sort: [
+            SortDescriptor(\Category.name)
+        ]
+    ) private var categories: [Category]
 
     @State private var name = ""
     @State private var weightString = ""
