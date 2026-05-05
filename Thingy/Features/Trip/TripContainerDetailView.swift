@@ -34,7 +34,7 @@ struct TripContainerDetailView: View {
                             
                             Spacer()
                             
-                            Text("\(Weight(children.totalWeight).formatted) (\(children.children.count))")
+                            Text("\(Weight(children.totalWeight).formatted)")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                         }

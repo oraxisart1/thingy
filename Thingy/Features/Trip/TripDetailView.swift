@@ -26,7 +26,7 @@ struct TripDetailView: View {
                         
                         Spacer()
                         
-                        Text("\(Weight(container.totalWeight).formatted) (\(container.children.count))")
+                        Text("\(Weight(container.totalWeight).formatted)")
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                     }
