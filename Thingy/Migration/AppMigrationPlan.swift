@@ -10,7 +10,9 @@ enum AppMigrationPlan: SchemaMigrationPlan {
     }
     
     static var stages: [MigrationStage] {
-        []
+        [
+            migrateV1toV2,
+        ]
     }
     
     static let migrateV1toV2 = MigrationStage.custom(

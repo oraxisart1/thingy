@@ -2,6 +2,8 @@ import SwiftUI
 import SwiftData
 
 struct MainView: View {
+    @Environment(\.modelContext) private var modelContext
+
     var body: some View {
         TabView {
             NavigationStack {
@@ -28,6 +30,7 @@ struct MainView: View {
                 Text("Настройки")
             }
         }
+        .environment(\.appStateProvider, AppStateProvider(context: modelContext))
     }
 }
 

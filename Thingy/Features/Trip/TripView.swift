@@ -3,6 +3,7 @@ import SwiftData
 
 struct TripView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.appStateProvider) private var appStateProvider
     
     @Query private var trips: [Trip]
     
@@ -13,36 +14,31 @@ struct TripView: View {
     @State private var isShowDeleteTripConfirmation: Bool = false
     @State private var deletingTrip: Trip? = nil
     
+    private var activeTrip: Trip? {
+        appStateProvider?.get().activeTrip
+    }
+    
+    private var otherTrips: [Trip] {
+        trips.filter{$0 != activeTrip}
+    }
+    
     var body: some View {
         List {
-            ForEach(trips) { trip in
-                NavigationLink {
-                    TripDetailView(trip)
-                } label: {
-                    HStack {
-                        Text(trip.name)
-                        
-                        Spacer()
-                    }
+            if let activeTrip {
+                Section {
+                    tripRow(activeTrip)
+                } header: {
+                    Text("Активная поездка")
                 }
-                .swipeActions(edge: .trailing) {
-                    Button(role: .destructive) {
-                        isShowDeleteTripConfirmation = true
-                        deletingTrip = trip
-                    } label: {
-                        Label("Удалить", systemImage: "trash")
-                    }
+
+            }
+            
+            Section {
+                ForEach(otherTrips) { trip in
+                    tripRow(trip)
                 }
-                .contextMenu {
-                    Button("Редактировать") {
-                        editingTrip = trip
-                    }
-                    
-                    Button("Дублировать") {
-                        let newTrip = trip.duplicate(name: "\(trip.name) (копия)")
-                        modelContext.insert(newTrip)
-                    }
-                }
+            } header: {
+                Text("Архив поездок")
             }
         }
         .navigationTitle("Мои поездки")
@@ -81,6 +77,51 @@ struct TripView: View {
             }
         }
     }
+    
+    func tripRow(_ trip: Trip) -> some View {
+        NavigationLink {
+            TripDetailView(trip)
+        } label: {
+            HStack {
+                Text(trip.name)
+                
+                Spacer()
+            }
+            .foregroundStyle(trip == activeTrip ? .blue : .primary)
+        }
+        .swipeActions(edge: .trailing) {
+            Button(role: .destructive) {
+                isShowDeleteTripConfirmation = true
+                deletingTrip = trip
+            } label: {
+                Label("Удалить", systemImage: "trash")
+            }
+        }
+        .contextMenu {
+            Button("Редактировать") {
+                editingTrip = trip
+            }
+            
+            Button("Дублировать") {
+                let newTrip = trip.duplicate(name: "\(trip.name) (копия)")
+                modelContext.insert(newTrip)
+            }
+            
+            if trip != activeTrip {
+                Button("Сделать активной") {
+                    withAnimation{
+                        appStateProvider?.get().activeTrip = trip
+                    }
+                }
+            } else {
+                Button("В архив") {
+                    withAnimation{
+                        appStateProvider?.get().activeTrip = nil
+                    }
+                }
+            }
+        }
+    }
 }
 
 #Preview("Пусто") {
@@ -90,8 +131,11 @@ struct TripView: View {
 }
 
 #Preview("Добавлены поездки") {
+    let container = PreviewProvider.make(FullDataPreview.self)
+    
     return NavigationStack {
         TripView()
     }
-    .modelContainer(PreviewProvider.make(FullDataPreview.self))
+    .modelContainer(container)
+    .environment(\.appStateProvider, AppStateProvider(context: container.mainContext))
 }

@@ -4,7 +4,7 @@ import SwiftData
 enum FullDataPreview: PreviewProtocol {
     static func makeContainer() -> ModelContainer {
         let container = try! ModelContainer(
-            for: Category.self, Item.self, TripItem.self, Trip.self,
+            for: Category.self, Item.self, TripItem.self, Trip.self, AppState.self,
             configurations: ModelConfiguration(isStoredInMemoryOnly: true)
         )
         
@@ -59,6 +59,9 @@ enum FullDataPreview: PreviewProtocol {
                 nestedContainer.children.append(TripItem(baseItem: item, trip: trip))
             }
         }
+        
+        let appState = AppState(activeTrip: try! context.fetch(FetchDescriptor<Trip>()).first!)
+        context.insert(appState)
         
         return container
     }
