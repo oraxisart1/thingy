@@ -11,12 +11,13 @@ struct HomeView: View {
     @State private var isShowingDeleteAlert = false
     @State private var itemPendingDeletion: Item?
     @State private var editingItem: Item?
-    
 
     @State private var categoryPendingSelection: Category?
     
+    @State private var searchText = ""
+    
     private var nonEmptyCategories: [Category] {
-        categories.filter { !$0.items.isEmpty }
+        categories.filter { !filterItems($0.items).isEmpty }
     }
     
     var body: some View {
@@ -42,7 +43,7 @@ struct HomeView: View {
                 List {
                     ForEach(nonEmptyCategories) {category in
                         Section {
-                            ForEach(sortedItems(category.items)) { item in
+                            ForEach(filterItems(sortedItems(category.items))) { item in
                                 HStack {
                                     Text(item.name)
                                         .font(.headline)
@@ -80,6 +81,7 @@ struct HomeView: View {
                         }
                     }
                 }
+                .searchable(text: $searchText)
             }
         }
         .navigationTitle("Мои вещи")
@@ -125,6 +127,14 @@ struct HomeView: View {
     
     private func sortedItems(_ items: [Item]) -> [Item] {
         items.sorted {$0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending}
+    }
+    
+    private func filterItems(_ items: [Item]) -> [Item] {
+        if searchText.isEmpty {
+            return items
+        }
+        
+        return items.filter{$0.name.localizedCaseInsensitiveContains(searchText)}
     }
 }
 
