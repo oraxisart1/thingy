@@ -8,6 +8,10 @@ struct TripContainerDetailView: View {
     
     @State private var isShowAddItems = false
     
+    var navigationTitle: String {
+        tripItem.parent == nil ? "\(tripItem.baseItem.name) (\(Weight(tripItem.totalWeight).formatted))" : tripItem.baseItem.name
+    }
+    
     init(_ item: TripItem) {
         self.tripItem = item
     }
@@ -43,7 +47,7 @@ struct TripContainerDetailView: View {
             }
             .onDelete(perform: delete)
         }
-        .navigationTitle(Text(tripItem.baseItem.name))
+        .navigationTitle(navigationTitle)
         .toolbar {
             ToolbarItem {
                 Button {
