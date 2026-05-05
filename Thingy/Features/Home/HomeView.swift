@@ -20,6 +20,10 @@ struct HomeView: View {
         categories.filter { !filterItems($0.items).isEmpty }
     }
     
+    private var totalWeightFormatted: String {
+        Weight(categories.reduce(0) { $0 + $1.items.reduce(0) { $0 + $1.weight } }).formatted
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             ScrollView(.horizontal, showsIndicators: false) {
@@ -84,7 +88,7 @@ struct HomeView: View {
                 .searchable(text: $searchText)
             }
         }
-        .navigationTitle("Мои вещи")
+        .navigationTitle("Мои вещи (\(totalWeightFormatted))")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
