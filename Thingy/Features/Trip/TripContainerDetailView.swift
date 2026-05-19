@@ -12,35 +12,63 @@ struct TripContainerDetailView: View {
         tripItem.parent == nil ? "\(tripItem.baseItem.name) (\(Weight(tripItem.totalWeight).formatted))" : tripItem.baseItem.name
     }
     
+    var sortedChildren: [TripItem] {
+        tripItem.children.sorted{!$0.isChecked && $1.isChecked}
+    }
+    
     init(_ item: TripItem) {
         self.tripItem = item
     }
     
     var body: some View {
         List() {
-            ForEach(tripItem.children) {children in
+            ForEach(sortedChildren) {children in
                 if !children.isContainer {
-                    HStack {
+                    HStack(spacing: 12) {
+                        Button {
+                            withAnimation{
+                                children.isChecked.toggle()
+                            }
+                        } label: {
+                            Image(systemName: children.isChecked ? "checkmark.circle.fill" : "circle")
+                                .foregroundStyle(children.isChecked ? Color.accentColor : Color.secondary)
+                                .imageScale(.large)
+                        }
+                        .buttonStyle(.plain)
+
                         Text(children.baseItem.name)
-                        
+
                         Spacer()
-                        
+
                         Text("\(Weight(children.totalWeight).formatted)")
                             .font(.subheadline)
                             .foregroundStyle(children.totalWeight > 0 ? Color.secondary : Color.red)
                     }
                 } else {
-                    NavigationLink {
-                        TripContainerDetailView(children)
-                    } label: {
-                        HStack {
-                            Text(children.baseItem.name)
-                            
-                            Spacer()
-                            
-                            Text("\(Weight(children.totalWeight).formatted)")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+                    HStack(spacing: 12) {
+                        Button {
+                            withAnimation{
+                                children.isChecked.toggle()
+                            }
+                        } label: {
+                            Image(systemName: children.isChecked ? "checkmark.circle.fill" : "circle")
+                                .foregroundStyle(children.isChecked ? Color.accentColor : Color.secondary)
+                                .imageScale(.large)
+                        }
+                        .buttonStyle(.plain)
+
+                        NavigationLink {
+                            TripContainerDetailView(children)
+                        } label: {
+                            HStack {
+                                Text(children.baseItem.name)
+
+                                Spacer()
+
+                                Text("\(Weight(children.totalWeight).formatted)")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                            }
                         }
                     }
                 }

@@ -5,10 +5,9 @@ import SwiftData
 class TripItem {
     @Relationship(deleteRule: .nullify)
     var baseItem: Item
-    
     var parent: TripItem?
-    
     var trip: Trip
+    var isChecked: Bool = true
     
     @Relationship(deleteRule: .cascade, inverse: \TripItem.parent)
     var children = [TripItem]()
