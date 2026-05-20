@@ -44,9 +44,9 @@ enum FullDataPreview: PreviewProtocol {
             let trip = Trip(name: "Поездка \(i)")
             context.insert(trip)
             
-            let firstContainer = TripItem(baseItem: containers.items[0], trip: trip)
+            let firstContainer = TripItem(baseItem: containers.items[0], trip: trip, maxWeight: 1000)
             trip.items.append(firstContainer)
-            let secondContainer = TripItem(baseItem: containers.items[1], trip: trip)
+            let secondContainer = TripItem(baseItem: containers.items[1], trip: trip, maxWeight: 500)
             trip.items.append(secondContainer)
 
             for item in clothes.items {

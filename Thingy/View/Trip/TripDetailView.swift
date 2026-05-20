@@ -11,6 +11,8 @@ struct TripDetailView: View {
     @State private var isShowDeleteContainerConfirmation: Bool = false
     @State private var deletingItem: TripItem? = nil
     
+    @State private var editingItem: TripItem? = nil
+    
     init(_ trip: Trip) {
         self.trip = trip
     }
@@ -26,9 +28,17 @@ struct TripDetailView: View {
                         
                         Spacer()
                         
-                        Text("\(Weight(container.totalWeight).formatted)")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+                        if let maxWeight = container.maxWeight {
+                            VStack(alignment: .trailing) {
+                                Text("\(Weight(container.totalWeight).formatted) / \(Weight(maxWeight).formatted)")
+                                    .font(.subheadline)
+                                    .foregroundColor(container.isOverweight ? .red : .secondary)
+                            }
+                        } else {
+                            Text("\(Weight(container.totalWeight).formatted)")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
                     }
                 }
                 .swipeActions(edge: .trailing) {
@@ -37,6 +47,13 @@ struct TripDetailView: View {
                         deletingItem = container
                     } label: {
                         Label("Удалить", systemImage: "trash")
+                    }
+                }
+                .contextMenu {
+                    Button("Настройка") {
+                        withAnimation {
+                            editingItem = container
+                        }
                     }
                 }
             }
@@ -54,6 +71,11 @@ struct TripDetailView: View {
         .sheet(isPresented: $isShowAddContainer) {
             NavigationStack {
                 AddContainerToTripView(trip)
+            }
+        }
+        .sheet(item: $editingItem) { item in
+            NavigationStack {
+                TripContainerSettingsView(container: item)
             }
         }
         .alert("Удалить предмет?", isPresented: $isShowDeleteContainerConfirmation, presenting: deletingItem) { item in

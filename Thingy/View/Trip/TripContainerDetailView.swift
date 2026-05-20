@@ -9,7 +9,7 @@ struct TripContainerDetailView: View {
     @State private var isShowAddItems = false
     
     var navigationTitle: String {
-        tripItem.parent == nil ? "\(tripItem.baseItem.name) (\(Weight(tripItem.totalWeight).formatted))" : tripItem.baseItem.name
+        tripItem.baseItem.name
     }
     
     var sortedChildren: [TripItem] {
@@ -21,8 +21,20 @@ struct TripContainerDetailView: View {
     }
     
     var body: some View {
-        List() {
-            ForEach(sortedChildren) {children in
+        VStack(spacing: 0) {
+            if let maxWeight = tripItem.maxWeight {
+                VStack(alignment: .center) {
+                    Text("\(Weight(tripItem.totalWeight).formatted) / \(Weight(maxWeight).formatted)")
+                        .font(.subheadline)
+                        .foregroundColor(tripItem.isOverweight ? .red : .secondary)
+                    
+                    ProgressView(value: tripItem.weightPercentage ?? 0)
+                        .tint(tripItem.isOverweight ? .red : .blue)
+                }
+            }
+
+            List() {
+                ForEach(sortedChildren) {children in
                 if !children.isContainer {
                     HStack(spacing: 12) {
                         Button {
@@ -74,8 +86,10 @@ struct TripContainerDetailView: View {
                 }
             }
             .onDelete(perform: delete)
+            }
         }
         .navigationTitle(navigationTitle)
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem {
                 Button {

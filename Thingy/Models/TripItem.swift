@@ -8,6 +8,7 @@ class TripItem {
     var parent: TripItem?
     var trip: Trip
     var isChecked: Bool = true
+    var maxWeight: Int? = nil
     
     @Relationship(deleteRule: .cascade, inverse: \TripItem.parent)
     var children = [TripItem]()
@@ -20,16 +21,29 @@ class TripItem {
         children.reduce(baseItem.weight) { $0 + $1.totalWeight }
     }
     
-    init(baseItem: Item, trip: Trip, parent: TripItem? = nil) {
+    init(baseItem: Item, trip: Trip, parent: TripItem? = nil, maxWeight: Int? = nil) {
         self.baseItem = baseItem
         self.trip = trip
         self.parent = parent
+        self.maxWeight = maxWeight
     }
 }
 
 extension TripItem {
+    var weightPercentage: Double? {
+        guard let maxWeight, maxWeight > 0 else { return nil }
+        
+        return Double(totalWeight) / Double(maxWeight)
+    }
+    
+    var isOverweight: Bool {
+        guard let maxWeight else { return false }
+        
+        return totalWeight > maxWeight
+    }
+    
     func clone(for trip: Trip, parent: TripItem? = nil) -> TripItem {
-        let newItem = TripItem(baseItem: baseItem, trip: trip, parent: parent)
+        let newItem = TripItem(baseItem: baseItem, trip: trip, parent: parent, maxWeight: maxWeight)
         
         for child in children {
             let newChild = child.clone(for: trip, parent: newItem)

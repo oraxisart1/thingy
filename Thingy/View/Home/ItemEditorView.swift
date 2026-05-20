@@ -2,18 +2,6 @@ import SwiftUI
 import SwiftData
 
 struct ItemEditorView: View {
-    enum WeightUnit: CaseIterable {
-        case g
-        case kg
-        
-        var title: String {
-            switch self {
-                case .g: return "г"
-                case .kg: return "кг"
-            }
-        }
-    }
-    
     let item: Item?
     
     @Environment(\.modelContext) private var modelContext
@@ -26,9 +14,8 @@ struct ItemEditorView: View {
     ) private var categories: [Category]
 
     @State private var name = ""
-    @State private var weightString = ""
-    @State private var weightUnit: WeightUnit = .g
     @State private var selectedCategoryId: PersistentIdentifier?
+    @State private var weight: Int? = nil
     @State private var isContainer: Bool = false
 
     @FocusState private var isNameFocused: Bool
@@ -42,8 +29,11 @@ struct ItemEditorView: View {
     }
 
     private var isWeightValid: Bool {
-        if weightString.isEmpty { return true }
-        return Int(weightString) != nil && (Int(weightString) ?? 0) >= 0
+        guard let weight, weight > 0 else {
+            return false
+        }
+        
+        return true
     }
     
     private var isCategoryValid: Bool {
@@ -51,7 +41,7 @@ struct ItemEditorView: View {
     }
 
     private var canSave: Bool {
-        isNameValid && !weightString.isEmpty && isWeightValid && isCategoryValid
+        isNameValid && isWeightValid && isCategoryValid
     }
     
     private var title: String {
@@ -71,30 +61,7 @@ struct ItemEditorView: View {
                 }
             }
             
-            HStack {
-                VStack(alignment: .leading) {
-                    TextField("Вес", text: $weightString)
-                        .keyboardType(.numberPad)
-                        .foregroundColor(isWeightValid ? .primary : .red)
-
-                    if !isWeightValid {
-                        Text("Введите корректное число больше или равное 0")
-                            .font(.caption)
-                            .foregroundColor(.red)
-                    }
-                }
-                
-                Spacer()
-                
-                Picker("", selection: $weightUnit) {
-                    ForEach(WeightUnit.allCases, id: \.self) { unit in
-                        Text(unit.title)
-                            .tag(unit)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .frame(width: 120)
-            }
+            WeightInput(weightInGrams: $weight)
             
             VStack(alignment: .leading) {
                 Picker("Категория", selection: $selectedCategoryId) {
@@ -137,9 +104,8 @@ struct ItemEditorView: View {
         .onAppear {
             if let item {
                 name = item.name
-                weightString = "\(item.weight)"
-                weightUnit = .g
                 selectedCategoryId = item.category.persistentModelID
+                weight = item.weight
                 if case .container = item.kind {
                     isContainer = true
                 }
@@ -151,23 +117,22 @@ struct ItemEditorView: View {
         guard let category = categories.first(where: {
                 $0.persistentModelID == selectedCategoryId
             }),
-            let weight = Int(weightString)
+            let weight
         else {
             return
         }
         
-        let weightInGrams: Int = weightUnit == .g ? weight : weight * 1000
         let kind = isContainer ? Item.ItemKind.container : .regular
         
         if let item {
             item.name = name
-            item.weight = weightInGrams
+            item.weight = weight
             item.category = category
             item.kind = kind
         } else {
             let newItem = Item(
                 name: name,
-                weight: weightUnit == .g ? weight : weight * 1000,
+                weight: weight,
                 category: category,
                 kind: isContainer ? .container : .regular
             )
