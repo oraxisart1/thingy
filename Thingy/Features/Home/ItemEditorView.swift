@@ -28,7 +28,7 @@ struct ItemEditorView: View {
     @State private var name = ""
     @State private var weightString = ""
     @State private var weightUnit: WeightUnit = .g
-    @State private var selectedCategory: Category? = nil
+    @State private var selectedCategoryId: PersistentIdentifier?
     @State private var isContainer: Bool = false
 
     @FocusState private var isNameFocused: Bool
@@ -47,7 +47,7 @@ struct ItemEditorView: View {
     }
     
     private var isCategoryValid: Bool {
-        selectedCategory != nil
+        selectedCategoryId != nil
     }
 
     private var canSave: Bool {
@@ -97,16 +97,13 @@ struct ItemEditorView: View {
             }
             
             VStack(alignment: .leading) {
-                Picker("Категория", selection: $selectedCategory) {
-                    if selectedCategory == nil {
-                        Text("Выберите категорию")
-                            .foregroundColor(.secondary)
-                            .tag(nil as Category?)
-                    }
-                    
-                    ForEach(categories) {category in
+                Picker("Категория", selection: $selectedCategoryId) {
+                    Text("Выберите категорию")
+                        .tag(nil as PersistentIdentifier?)
+
+                    ForEach(categories) { category in
                         Text(category.name)
-                            .tag(category as Category?)
+                            .tag(category.persistentModelID)
                     }
                 }
             }
@@ -142,7 +139,7 @@ struct ItemEditorView: View {
                 name = item.name
                 weightString = "\(item.weight)"
                 weightUnit = .g
-                selectedCategory = item.category
+                selectedCategoryId = item.category.persistentModelID
                 if case .container = item.kind {
                     isContainer = true
                 }
@@ -151,8 +148,10 @@ struct ItemEditorView: View {
     }
     
     private func save() {
-        guard let category = selectedCategory,
-              let weight = Int(weightString)
+        guard let category = categories.first(where: {
+                $0.persistentModelID == selectedCategoryId
+            }),
+            let weight = Int(weightString)
         else {
             return
         }
