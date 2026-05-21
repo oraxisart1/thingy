@@ -61,9 +61,16 @@ struct TripView: View {
                 TripEditorView(trip: trip)
             }
         }
-        .alert("Удалить предмет?", isPresented: $isShowDeleteTripConfirmation, presenting: deletingTrip) { trip in
+        .alert("Удалить поездку?", isPresented: $isShowDeleteTripConfirmation, presenting: deletingTrip) { trip in
                 Button("Удалить", role: .destructive) {
                     modelContext.delete(trip)
+                    guard let appState = appStateProvider?.get() else {
+                        return
+                    }
+                    
+                    if appState.activeTrip == trip {
+                        appState.activeTrip = nil
+                    }
                 }
                 Button("Отмена", role: .cancel) {
                     deletingTrip = nil
