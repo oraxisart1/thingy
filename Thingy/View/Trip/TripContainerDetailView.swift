@@ -113,7 +113,7 @@ struct TripContainerDetailView: View {
     
     private func delete(_ indexes: IndexSet) {
         for index in indexes {
-            modelContext.delete(tripItem.children[index])
+            modelContext.delete(sortedChildren[index])
         }
     }
 }
