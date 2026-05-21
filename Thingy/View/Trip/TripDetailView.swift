@@ -13,13 +13,19 @@ struct TripDetailView: View {
     
     @State private var editingItem: TripItem? = nil
     
+    private var sortedContainers: [TripItem] {
+        trip.containers.sorted{
+            $0.baseItem.name.localizedCaseInsensitiveCompare($1.baseItem.name) == .orderedAscending
+        }
+    }
+    
     init(_ trip: Trip) {
         self.trip = trip
     }
     
     var body: some View {
         List {
-            ForEach(trip.containers) { container in
+            ForEach(sortedContainers) { container in
                 NavigationLink {
                     TripContainerDetailView(container)
                 } label: {
@@ -89,7 +95,7 @@ struct TripDetailView: View {
                 Text("Вы уверены, что хотите удалить сумку для багажа '\(item.baseItem.name)'? Все вложенные предметы поездки будут так же удалены. Это действие нельзя отменить.")
             }
         .overlay {
-            if trip.containers.isEmpty {
+            if sortedContainers.isEmpty {
                 ContentUnavailableView("Багаж пуст", systemImage: "suitcase", description: Text("Добавьте сумку чтобы начать"))
             }
         }

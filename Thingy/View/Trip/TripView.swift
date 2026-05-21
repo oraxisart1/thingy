@@ -5,7 +5,9 @@ struct TripView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.appStateProvider) private var appStateProvider
     
-    @Query private var trips: [Trip]
+    @Query(sort: [
+        SortDescriptor(\Trip.name)
+    ]) private var trips: [Trip]
     
     @State private var isShowAddTrip: Bool = false
     

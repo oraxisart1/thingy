@@ -13,7 +13,13 @@ struct TripContainerDetailView: View {
     }
     
     var sortedChildren: [TripItem] {
-        tripItem.children.sorted{!$0.isChecked && $1.isChecked}
+        tripItem.children.sorted { first, second in
+            if first.isChecked != second.isChecked {
+                return !first.isChecked
+            }
+            
+            return first.baseItem.name.localizedCaseInsensitiveCompare(second.baseItem.name) == .orderedAscending
+        }
     }
     
     init(_ item: TripItem) {
