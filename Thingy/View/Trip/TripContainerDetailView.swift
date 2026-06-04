@@ -46,6 +46,7 @@ struct TripContainerDetailView: View {
                         Button {
                             withAnimation{
                                 children.isChecked.toggle()
+                                try? modelContext.save()
                             }
                         } label: {
                             Image(systemName: children.isChecked ? "checkmark.circle.fill" : "circle")
@@ -67,6 +68,7 @@ struct TripContainerDetailView: View {
                         Button {
                             withAnimation{
                                 children.isChecked.toggle()
+                                try? modelContext.save()
                             }
                         } label: {
                             Image(systemName: children.isChecked ? "checkmark.circle.fill" : "circle")
@@ -121,6 +123,7 @@ struct TripContainerDetailView: View {
         for index in indexes {
             modelContext.delete(sortedChildren[index])
         }
+        try? modelContext.save()
     }
 }
 

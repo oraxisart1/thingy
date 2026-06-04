@@ -66,13 +66,13 @@ struct TripView: View {
         .alert("Удалить поездку?", isPresented: $isShowDeleteTripConfirmation, presenting: deletingTrip) { trip in
                 Button("Удалить", role: .destructive) {
                     modelContext.delete(trip)
-                    guard let appState = appStateProvider?.get() else {
-                        return
-                    }
-                    
-                    if appState.activeTrip == trip {
+
+                    if let appState = appStateProvider?.get(),
+                       appState.activeTrip == trip {
                         appState.activeTrip = nil
                     }
+
+                    try? modelContext.save()
                 }
                 Button("Отмена", role: .cancel) {
                     deletingTrip = nil
@@ -114,18 +114,22 @@ struct TripView: View {
             Button("Дублировать") {
                 let newTrip = trip.duplicate(name: "\(trip.name) (копия)")
                 modelContext.insert(newTrip)
+                
+                try? modelContext.save()
             }
             
             if trip != activeTrip {
                 Button("Сделать активной") {
                     withAnimation{
                         appStateProvider?.get().activeTrip = trip
+                        try? modelContext.save()
                     }
                 }
             } else {
                 Button("В архив") {
                     withAnimation{
                         appStateProvider?.get().activeTrip = nil
+                        try? modelContext.save()
                     }
                 }
             }

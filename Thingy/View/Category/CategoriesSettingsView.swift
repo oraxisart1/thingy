@@ -55,6 +55,7 @@ struct CategoriesSettingsView: View {
         .alert("Удалить предмет?", isPresented: $isShowingDeleteAlert, presenting: categoryPendingDeletion) { category in
                 Button("Удалить", role: .destructive) {
                     modelContext.delete(category)
+                    try? modelContext.save()
                 }
                 .disabled(!category.items.isEmpty)
                 Button("Отмена", role: .cancel) {

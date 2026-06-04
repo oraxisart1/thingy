@@ -31,6 +31,8 @@ struct AddItemToContainerView: View {
         items.forEach({item in
             container.children.append(TripItem(baseItem: item, trip: trip, parent: container))
         })
+
+        try? modelContext.save()
     }
 }
 

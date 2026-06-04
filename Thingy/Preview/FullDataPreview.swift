@@ -63,6 +63,8 @@ enum FullDataPreview: PreviewProtocol {
         let appState = AppState(activeTrip: try! context.fetch(FetchDescriptor<Trip>()).first!)
         context.insert(appState)
         
+        try? context.save()
+        
         return container
     }
 }

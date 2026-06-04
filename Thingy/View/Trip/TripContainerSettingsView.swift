@@ -1,8 +1,10 @@
 import SwiftUI
+import SwiftData
 
 struct TripContainerSettingsView: View {
     @Environment(\.dismiss) private var dismiss
-    
+    @Environment(\.modelContext) private var modelContext
+
     var container: TripItem
 
     @State private var maxWeight: Int?
@@ -48,6 +50,7 @@ struct TripContainerSettingsView: View {
     
     private func save() {
         container.maxWeight = (maxWeight ?? 0) > 0 ? maxWeight : nil
+        try? modelContext.save()
     }
 }
 

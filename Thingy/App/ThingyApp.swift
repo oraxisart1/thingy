@@ -8,7 +8,10 @@ struct ThingyApp: App {
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
+            container.mainContext.autosaveEnabled = false
+            
+            return container
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }

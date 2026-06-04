@@ -127,6 +127,7 @@ struct HomeView: View {
     
     private func delete(_ item: Item) {
         modelContext.delete(item)
+        try? modelContext.save()
     }
     
     private func sortedItems(_ items: [Item]) -> [Item] {

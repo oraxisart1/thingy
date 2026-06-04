@@ -30,7 +30,8 @@ struct AddContainerToTripView: View {
         items.forEach({
             trip.items.append(TripItem(baseItem: $0, trip: trip))
         })
-        
+
+        try? modelContext.save()
         dismiss()
     }
 }

@@ -121,9 +121,9 @@ struct ItemEditorView: View {
         else {
             return
         }
-        
+
         let kind = isContainer ? Item.ItemKind.container : .regular
-        
+
         if let item {
             item.name = name
             item.weight = weight
@@ -136,9 +136,11 @@ struct ItemEditorView: View {
                 category: category,
                 kind: isContainer ? .container : .regular
             )
-            
+
             category.items.append(newItem)
         }
+
+        try? modelContext.save()
     }
 }
 

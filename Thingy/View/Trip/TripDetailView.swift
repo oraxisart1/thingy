@@ -87,6 +87,7 @@ struct TripDetailView: View {
         .alert("Удалить предмет?", isPresented: $isShowDeleteContainerConfirmation, presenting: deletingItem) { item in
                 Button("Удалить", role: .destructive) {
                     modelContext.delete(item)
+                    try? modelContext.save()
                 }
                 Button("Отмена", role: .cancel) {
                     deletingItem = nil

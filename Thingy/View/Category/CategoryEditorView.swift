@@ -71,6 +71,8 @@ struct CategoryEditorView: View {
             let newCategory = Category(name: name)
             modelContext.insert(newCategory)
         }
+        
+        try? modelContext.save()
     }
 }
 

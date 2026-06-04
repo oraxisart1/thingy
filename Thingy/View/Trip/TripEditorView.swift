@@ -71,6 +71,8 @@ struct TripEditorView: View {
             let newTrip = Trip(name: name)
             modelContext.insert(newTrip)
         }
+        
+        try? modelContext.save()
     }
 }
 
