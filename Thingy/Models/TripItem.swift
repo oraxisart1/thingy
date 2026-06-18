@@ -7,7 +7,7 @@ class TripItem {
     var baseItem: Item
     var parent: TripItem?
     var trip: Trip
-    var isChecked: Bool = true
+    var isChecked: Bool = false
     var maxWeight: Int? = nil
     
     @Relationship(deleteRule: .cascade, inverse: \TripItem.parent)
