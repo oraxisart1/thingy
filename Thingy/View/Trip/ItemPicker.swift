@@ -4,7 +4,7 @@ import SwiftData
 struct ItemPicker: View {
     @Environment(\.dismiss) private var dismiss
     
-    @Query(sort: [
+    @Query(filter: #Predicate<Item>{$0.isArchived == false},sort: [
         SortDescriptor(\Item.name)
     ]) private var items: [Item]
     

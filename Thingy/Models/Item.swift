@@ -6,6 +6,7 @@ final class Item {
     var name: String
     var weight: Int
     var kind: ItemKind? = ItemKind.regular
+    var isArchived: Bool = false
     
     var category: Category
     
@@ -26,5 +27,17 @@ final class Item {
     enum ItemKind: String, Codable {
         case regular
         case container
+    }
+}
+
+extension Item {
+    func archive() -> Self {
+        isArchived = true
+        return self
+    }
+    
+    func unarchive() -> Self {
+        isArchived = false
+        return self
     }
 }

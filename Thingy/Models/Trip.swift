@@ -24,11 +24,11 @@ extension Trip {
     
     func duplicate(name: String) -> Trip {
         let newTrip = Trip(name: name)
-        
-        for item in items where item.parent == nil {
-            newTrip.items.append(item.clone(for: newTrip))
+
+        for item in items where item.parent == nil && !item.baseItem.isArchived {
+            newTrip.items.append(item.duplicateForTrip(for: newTrip))
         }
-        
+
         return newTrip
     }
 }

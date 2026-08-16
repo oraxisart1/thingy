@@ -42,15 +42,15 @@ extension TripItem {
         return totalWeight > maxWeight
     }
     
-    func clone(for trip: Trip, parent: TripItem? = nil) -> TripItem {
+    func duplicateForTrip(for trip: Trip, parent: TripItem? = nil) -> TripItem {
         let newItem = TripItem(baseItem: baseItem, trip: trip, parent: parent, maxWeight: maxWeight)
-        
-        for child in children {
-            let newChild = child.clone(for: trip, parent: newItem)
+
+        for child in children where !child.baseItem.isArchived {
+            let newChild = child.duplicateForTrip(for: trip, parent: newItem)
             newItem.children.append(newChild)
             trip.items.append(newChild)
         }
-        
+
         return newItem
     }
 }

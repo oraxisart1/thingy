@@ -11,6 +11,8 @@ struct HomeView: View {
     @State private var isShowingDeleteAlert = false
     @State private var itemPendingDeletion: Item?
     @State private var editingItem: Item?
+    @State private var isShowingArchiveAlert = false
+    @State private var itemPendingArchiving: Item?
 
     @State private var categoryPendingSelection: Category?
     
@@ -21,7 +23,7 @@ struct HomeView: View {
     }
     
     private var totalWeightFormatted: String {
-        Weight(categories.reduce(0) { $0 + $1.items.reduce(0) { $0 + $1.weight } }).formatted
+        Weight(categories.reduce(0) { $0 + $1.items.filter{$0.isArchived == false}.reduce(0) { $0 + $1.weight } }).formatted
     }
     
     var body: some View {
@@ -71,6 +73,12 @@ struct HomeView: View {
                                 .onTapGesture {
                                     editingItem = item
                                 }
+                                .contextMenu{
+                                    Button("Архивировать") {
+                                        isShowingArchiveAlert = true
+                                        itemPendingArchiving = item
+                                    }
+                                }
                             }
                         } header: {
                             Text(category.name)
@@ -91,6 +99,16 @@ struct HomeView: View {
         .navigationTitle("Мои вещи (\(totalWeightFormatted))")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
+                NavigationLink {
+                    ArchiveView()
+                } label: {
+                    Image(systemName: "archivebox")
+                }
+            }
+            
+            ToolbarSpacer(placement: .topBarTrailing)
+            
+            ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     isShowingAddSheet = true
                 } label: {
@@ -108,6 +126,19 @@ struct HomeView: View {
             } message: { item in
                 Text("Вы уверены, что хотите удалить '\(item.name)'? Это действие нельзя отменить.")
             }
+        .alert("Архивировать предмет?", isPresented: $isShowingArchiveAlert, presenting: itemPendingArchiving) { item in
+            Button("Архивировать", role: .destructive) {
+                withAnimation{
+                    _ = item.archive()
+                    itemPendingArchiving = nil
+                }
+            }
+            Button("Отмена", role: .cancel) {
+                itemPendingArchiving = nil
+            }
+        } message: { item in
+            Text("Вы уверены, что хотите архивировать '\(item.name)'?")
+        }
         .sheet(isPresented: $isShowingAddSheet) {
             NavigationStack {
                 ItemEditorView()
@@ -135,11 +166,7 @@ struct HomeView: View {
     }
     
     private func filterItems(_ items: [Item]) -> [Item] {
-        if searchText.isEmpty {
-            return items
-        }
-        
-        return items.filter{$0.name.localizedCaseInsensitiveContains(searchText)}
+        return items.filter{$0.isArchived == false && (searchText.isEmpty || $0.name.localizedCaseInsensitiveContains(searchText))}
     }
 }
 

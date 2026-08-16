@@ -14,11 +14,13 @@ enum FullDataPreview: PreviewProtocol {
         let clothes = Category(name: "Одежда")
         let other = Category(name: "Другое")
         let electronics = Category(name: "Электроника")
+        let forArchive = Category(name: "Для архивации")
         
         context.insert(containers)
         context.insert(clothes)
         context.insert(other)
         context.insert(electronics)
+        context.insert(forArchive)
         
         for i in 1..<10 {
             let item = Item(name: "Сумка \(i)", weight: (i + 1) * 100, category: containers, kind: .container)
@@ -40,6 +42,11 @@ enum FullDataPreview: PreviewProtocol {
             electronics.items.append(item)
         }
         
+        for i in 1..<10 {
+            let item = Item(name: "Вещь для архивации \(i)", weight: (i + 1) * 30, category: forArchive).archive()
+            forArchive.items.append(item)
+        }
+        
         for i in 1..<3 {
             let trip = Trip(name: "Поездка \(i)")
             context.insert(trip)
@@ -58,6 +65,8 @@ enum FullDataPreview: PreviewProtocol {
             for item in other.items {
                 nestedContainer.children.append(TripItem(baseItem: item, trip: trip))
             }
+            
+            firstContainer.children.append(TripItem(baseItem: forArchive.items[0], trip: trip, parent: firstContainer))
         }
         
         let appState = AppState(activeTrip: try! context.fetch(FetchDescriptor<Trip>()).first!)
