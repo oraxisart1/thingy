@@ -10,26 +10,13 @@ struct ItemPicker: View {
     
     @State private var searchText: String = ""
     @State private var selectedItems: Set<Item> = []
-    
+    @State private var groupedItems: [(category: Category, items: [Item])] = []
+
     let title: String
     let filter: (Item) -> Bool
     let onDone: ([Item]) -> Void
     let noSelectionMessage: String
-    
-    private var filteredItems: [Item] {
-        items
-            .filter(filter)
-            .filter(searchFilter)
-    }
-    
-    private var groupedItems: [(category: Category, items: [Item])] {
-        Dictionary(grouping: filteredItems, by: { $0.category })
-                .map { (category: $0.key, items: $0.value) }
-                .sorted {
-                    $0.category.name.localizedCaseInsensitiveCompare($1.category.name) == .orderedAscending
-                }
-    }
-    
+
     init(
         title: String,
         filter: @escaping (Item) -> Bool = { _ in true },
@@ -72,10 +59,28 @@ struct ItemPicker: View {
         }
         .searchable(text: $searchText)
         .overlay {
-            if filteredItems.isEmpty {
+            if groupedItems.isEmpty {
                 ContentUnavailableView("Ничего не найдено", systemImage: "suitcase.rolling", description: Text(noSelectionMessage))
             }
         }
+        .onChange(of: searchText, initial: true) {
+            updateGroupedItems()
+        }
+        .onChange(of: items) {
+            updateGroupedItems()
+        }
+    }
+
+    private func updateGroupedItems() {
+        let filteredItems = items
+            .filter(filter)
+            .filter(searchFilter)
+
+        groupedItems = Dictionary(grouping: filteredItems, by: { $0.category })
+            .map { (category: $0.key, items: $0.value) }
+            .sorted {
+                $0.category.name.localizedCaseInsensitiveCompare($1.category.name) == .orderedAscending
+            }
     }
     
     private func row(_ item: Item) -> some View {

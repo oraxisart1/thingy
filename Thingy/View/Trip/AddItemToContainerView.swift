@@ -20,9 +20,11 @@ struct AddItemToContainerView: View {
     }
     
     var body: some View {
+        let usedItems = usedItemsSet
+
         ItemPicker(
             title: "Выбор вещей",
-            filter: {item in !usedItemsSet.contains(item)},
+            filter: { item in !usedItems.contains(item) },
             onDone: add
         )
     }

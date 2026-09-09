@@ -22,27 +22,27 @@ enum FullDataPreview: PreviewProtocol {
         context.insert(electronics)
         context.insert(forArchive)
         
-        for i in 1..<10 {
+        for i in 1..<100 {
             let item = Item(name: "Сумка \(i)", weight: (i + 1) * 100, category: containers, kind: .container)
             containers.items.append(item)
         }
         
-        for i in 1..<10 {
+        for i in 1..<100 {
             let item = Item(name: "Одежда \(i)", weight: (i + 1) * 10, category: clothes)
             clothes.items.append(item)
         }
         
-        for i in 1..<10 {
+        for i in 1..<100 {
             let item = Item(name: "Другое \(i)", weight: (i + 1) * 20, category: other)
             other.items.append(item)
         }
         
-        for i in 1..<10 {
+        for i in 1..<100 {
             let item = Item(name: "Электроника \(i)", weight: (i + 1) * 30, category: electronics)
             electronics.items.append(item)
         }
         
-        for i in 1..<10 {
+        for i in 1..<100 {
             let item = Item(name: "Вещь для архивации \(i)", weight: (i + 1) * 30, category: forArchive).archive()
             forArchive.items.append(item)
         }

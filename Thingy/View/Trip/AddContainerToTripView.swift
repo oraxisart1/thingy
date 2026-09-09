@@ -18,9 +18,11 @@ struct AddContainerToTripView: View {
     }
     
     var body: some View {
+        let usedItems = usedItemsSet
+
         ItemPicker(
             title: "Выбор сумки",
-            filter: {item in !usedItemsSet.contains(item) && item.isContainer},
+            filter: { item in !usedItems.contains(item) && item.isContainer },
             onDone: add,
             noSelectionMessage: "Нет доступных сумок"
         )
